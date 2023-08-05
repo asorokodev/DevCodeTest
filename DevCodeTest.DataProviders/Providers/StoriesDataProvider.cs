@@ -12,7 +12,7 @@ namespace DevCodeTest.DataProviders.Providers
     internal sealed class StoriesDataProvider : IStoriesDataProvider, IDisposable
     {
         private const string ServiceUnavailableErrorCode = "503";
-        private const int WaitBeforeRetryMs = 500;
+        private const int WaitBeforeRetryMs = 1000;
         private const int TimeoutSec = 3;
         private readonly AsyncPolicyWrap _policyWrap;
 
@@ -35,7 +35,7 @@ namespace DevCodeTest.DataProviders.Providers
 
             _httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri(_dataSourceOptions.NewsBaseUrl),
+                BaseAddress = new Uri(_dataSourceOptions.BaseUrl),
             };
 
             var retryPolicy = Policy
@@ -57,9 +57,9 @@ namespace DevCodeTest.DataProviders.Providers
                     return Task.CompletedTask;
                 });
 
-            var rateLimit = Policy.RateLimitAsync(_dataSourceOptions.RateLimit, TimeSpan.FromSeconds(1));
+            var rateLimit = Policy.RateLimitAsync(_dataSourceOptions.RateLimit, TimeSpan.FromSeconds(1), 10);
 
-            _policyWrap = Policy.WrapAsync(retryPolicy, timeoutPolicy, rateLimit);
+            _policyWrap = Policy.WrapAsync(retryPolicy, rateLimit, timeoutPolicy);
         }
 
         public async Task<IEnumerable<int>?> GetBestStoriyIdsAsync(CancellationToken cancellationToken)
@@ -81,7 +81,7 @@ namespace DevCodeTest.DataProviders.Providers
         {
             var response = await _policyWrap.ExecuteAsync(async ctx =>
             {
-                var response = await _httpClient.GetAsync(string.Format(_dataSourceOptions.BestStoriesItemRoute, id), cancellationToken);
+                var response = await _httpClient.GetAsync(string.Format(_dataSourceOptions.ItemDetailsRoute, id), cancellationToken);
                 response.EnsureSuccessStatusCode();
                 return response;
             }, cancellationToken);

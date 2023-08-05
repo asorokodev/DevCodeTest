@@ -8,13 +8,13 @@ namespace DevCodeTest.DataProviders.Options
 
         [Required]
         [Url]
-        public string NewsBaseUrl { get; set; } = string.Empty;
+        public string BaseUrl { get; set; } = string.Empty;
 
         [Required]
         public string BestStoriesIdsRoute { get; set; } = string.Empty;
 
         [Required]
-        public string BestStoriesItemRoute { get; set; } = string.Empty;
+        public string ItemDetailsRoute { get; set; } = string.Empty;
 
         [Required]
         [Range(1, 5)]
