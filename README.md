@@ -17,3 +17,4 @@ All configurations are stored in appsettings.json file:
 "RequestProcessing": {
   "MaxParallelRequest": "50"
 }
+
